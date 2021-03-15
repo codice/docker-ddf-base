@@ -5,7 +5,7 @@ COPY argbash-templates/* /work/
 RUN ./build.sh
 
 # Create base for final image
-FROM anapsix/alpine-java:8_jdk as base
+FROM adoptopenjdk/openjdk11:alpine as base
 LABEL maintainer=oconnormi
 LABEL org.codice.application.type=ddf
 
@@ -13,7 +13,7 @@ ENV ENTRYPOINT_HOME=/opt/entrypoint
 
 RUN mkdir -p $ENTRYPOINT_HOME
 
-RUN apk add --no-cache curl openssl gettext
+RUN apk add --no-cache curl openssl gettext bash
 RUN  curl -L https://github.com/oconnormi/props/releases/download/v0.2.0/props_linux_amd64 -o /usr/local/bin/props \
     && chmod 755 /usr/local/bin/props
 RUN curl -LsSk https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
