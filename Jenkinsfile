@@ -1,3 +1,4 @@
+@Library('github.com/connexta/cx-pipeline-library@master') _
 pipeline {
   agent { label 'linux-docker-small' }
   options {
@@ -12,7 +13,7 @@ pipeline {
     */
     cron(BRANCH_NAME == "master" ? "H H(4-6) * * *" : "")
   }
-  environment { PATH="${tool 'docker-latest'}/bin:$PATH" }
+  // environment { PATH="${tool 'docker-latest'}/bin:$PATH" }
   stages {
     stage('Build Images') {
       steps {
