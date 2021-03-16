@@ -1,6 +1,6 @@
 @Library('github.com/connexta/cx-pipeline-library@master') _
 pipeline {
-  agent { label 'linux-docker-small' }
+  agent { label 'linux-small' }
   options {
     buildDiscarder(logRotator(numToKeepStr:'25'))
     disableConcurrentBuilds()
