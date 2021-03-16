@@ -17,6 +17,7 @@ pipeline {
   stages {
     stage('Build Images') {
       steps {
+	    dockerd{}
         sh 'make image'
       }
     }
