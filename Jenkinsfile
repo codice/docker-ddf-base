@@ -13,7 +13,6 @@ pipeline {
     */
     cron(BRANCH_NAME == "master" ? "H H(4-6) * * *" : "")
   }
-  // environment { PATH="${tool 'docker-latest'}/bin:$PATH" }
   stages {
     stage('Build Images') {
       steps {
