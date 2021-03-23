@@ -6,13 +6,6 @@ pipeline {
     disableConcurrentBuilds()
     timestamps()
   }
-  triggers {
-    /*
-      Restrict nightly builds to master branch
-      Note: The BRANCH_NAME will only work with a multi-branch job using the github-branch-source
-    */
-    cron(BRANCH_NAME == "master" ? "H H(4-6) * * *" : "")
-  }
   stages {
     stage('Build Images') {
       steps {

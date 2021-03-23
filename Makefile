@@ -3,12 +3,8 @@ IMAGE_NAME:=codice/ddf-base
 
 GIT_SHA:=$(shell git rev-parse HEAD)
 MASTER_SHA:=$(shell git show-ref -s refs/heads/master)
-ifneq (${MASTER_SHA}, ${GIT_SHA})
-    IMAGE_VERSION=2.27-alpine 	
-#   IMAGE_VERSION=${GIT_SHA}
-else
-	IMAGE_VERSION=latest
-endif
+IMAGE_VERSION=2.27-alpine 	
+
 # Compute Build Tag
 BUILD_TAG=$(IMAGE_NAME):$(IMAGE_VERSION)
 
