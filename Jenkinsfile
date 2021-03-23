@@ -1,21 +1,15 @@
+@Library('github.com/connexta/cx-pipeline-library@master') _
 pipeline {
-  agent { label 'linux-docker-small' }
+  agent { label 'linux-small' }
   options {
     buildDiscarder(logRotator(numToKeepStr:'25'))
     disableConcurrentBuilds()
     timestamps()
   }
-  triggers {
-    /*
-      Restrict nightly builds to master branch
-      Note: The BRANCH_NAME will only work with a multi-branch job using the github-branch-source
-    */
-    cron(BRANCH_NAME == "master" ? "H H(4-6) * * *" : "")
-  }
-  environment { PATH="${tool 'docker-latest'}/bin:$PATH" }
   stages {
     stage('Build Images') {
       steps {
+	    dockerd{}
         sh 'make image'
       }
     }
