@@ -2,6 +2,10 @@
 
 Base level docker image containing all dependencies for DDF as well as a common set of steps for running a DDF based distribution
 
+## Notice on Versions
+
+This repo has been re-organized to have a single version of the entrypoint scripts going forward. the previous state of the repository can be found on the `legacy` branch.
+
 ## Usage Requirements
 
 This image is meant to be the basis for any ddf based image.
@@ -90,6 +94,18 @@ To set the internal HTTP Port provide a value for `INTERNAL_HTTP_PORT=<port>`
 To set the external HTTPS Port provide a value for `EXTERNAL_HTTPS_PORT=<port>`
 
 To set the external HTTP Port provide a value for `EXTERNAL_HTTP_PORT=<port>`
+
+#### Internal Service Context
+
+Change the root context for all services
+
+Set `INTERNAL_CONTEXT=<context_path>`
+
+#### External Service Context
+
+Change the context for services when running behind a proxy/load balancer
+
+Set `EXTERNAL_CONTEXT=<context_path>`
 
 #### Site Name
 
