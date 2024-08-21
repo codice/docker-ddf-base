@@ -5,7 +5,7 @@ COPY argbash-templates/* /work/
 RUN ./build.sh
 
 # Create base for final image
-FROM adoptopenjdk/openjdk11:alpine as base
+FROM  eclipse-temurin:17-jre-alpine as base
 LABEL maintainer=oconnormi
 LABEL org.codice.application.type=ddf
 
