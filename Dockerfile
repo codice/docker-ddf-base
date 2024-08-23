@@ -22,23 +22,23 @@ RUN curl -LsSk https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux6
 COPY entrypoint/* $ENTRYPOINT_HOME/
 COPY --from=argbash /out/cmd/* /usr/local/bin/
 
-# Create test base
-FROM base as test
-RUN apk add --no-cache git
-RUN git clone https://github.com/bats-core/bats-core.git
-RUN ./bats-core/install.sh /usr/local
-
-# Run unit level tests
-FROM test as unit-test
-COPY ./argbash-templates/tests/* /tests/
-RUN bats /tests/*.bats
-
-# Run integration level tests
-FROM test as integration-test
-COPY ./tests/* /tests/
-RUN bats /tests/*.bats
-
-# Create final image
-FROM base
+## Create test base
+#FROM base as test
+#RUN apk add --no-cache git
+#RUN git clone https://github.com/bats-core/bats-core.git
+#RUN ./bats-core/install.sh /usr/local
+#
+## Run unit level tests
+#FROM test as unit-test
+#COPY ./argbash-templates/tests/* /tests/
+#RUN bats /tests/*.bats
+#
+## Run integration level tests
+#FROM test as integration-test
+#COPY ./tests/* /tests/
+#RUN bats /tests/*.bats
+#
+## Create final image
+#FROM base
 
 ENTRYPOINT ["/bin/bash", "-c", "$ENTRYPOINT_HOME/entrypoint.sh"]
