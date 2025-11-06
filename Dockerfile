@@ -1,11 +1,11 @@
 # Generate commands from argbash templates
-FROM matejak/argbash:2.7.1-1 as argbash
-ADD "https://raw.githubusercontent.com/oconnormi/dev-tools/master/templates/ddf-create-cdm.m4" /work/create-cdm.m4
+FROM --platform=$BUILDPLATFORM matejak/argbash:2.7.1-1 AS argbash
+# Copy all templates including vendored create-cdm.m4 (eliminates external dependency)
 COPY argbash-templates/* /work/
 RUN ./build.sh
 
 # Create base for final image
-FROM  eclipse-temurin:17-jre-alpine as base
+FROM azul/zulu-openjdk-alpine:17-latest AS base
 LABEL maintainer=oconnormi
 LABEL org.codice.application.type=ddf
 
@@ -13,11 +13,23 @@ ENV ENTRYPOINT_HOME=/opt/entrypoint
 
 RUN mkdir -p $ENTRYPOINT_HOME
 
-RUN apk add --no-cache curl openssl gettext bash
-RUN  curl -L https://github.com/oconnormi/props/releases/download/v0.2.0/props_linux_amd64 -o /usr/local/bin/props \
-    && chmod 755 /usr/local/bin/props
-RUN curl -LsSk https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
-    && chmod 755 /usr/local/bin/jq
+# Install Alpine packages (jq now from Alpine repos for multi-arch support)
+RUN apk add --no-cache curl openssl gettext bash jq
+
+# Install props tool with multi-architecture support from codice/props fork
+ARG TARGETARCH
+ARG PROPS_VERSION=0.1.1
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+        amd64) PROPS_ARCH='amd64' ;; \
+        arm64) PROPS_ARCH='arm64' ;; \
+        *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac; \
+    echo "Installing props v${PROPS_VERSION} for ${TARGETARCH}"; \
+    curl -fsSL "https://github.com/codice/props/releases/download/v${PROPS_VERSION}/props_${PROPS_VERSION}_linux_${PROPS_ARCH}" \
+        -o /usr/local/bin/props; \
+    chmod 755 /usr/local/bin/props; \
+    props version || props help
 
 COPY entrypoint/* $ENTRYPOINT_HOME/
 COPY --from=argbash /out/cmd/* /usr/local/bin/

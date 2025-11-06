@@ -1,21 +1,46 @@
-name: Build Master
+name: Build and Push Multi-Arch Images
 
 on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: build
-        run: make image IMAGE_VERSION=latest
-      - uses: actions/docker/login@master
-        env: 
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - name: push
-        run: make push IMAGE_VERSION=latest
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push multi-arch images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            codice/ddf-base:3.0
+            codice/ddf-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Inspect multi-arch manifest
+        run: docker buildx imagetools inspect codice/ddf-base:3.0
 
