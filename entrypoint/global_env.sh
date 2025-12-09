@@ -108,7 +108,22 @@ function isReady {
     fi
     return 0
   else
-    if [ $(${_client} "lna" | tail -n +6 | grep -Ev "${_legacy_wfr_exclusions}" | wc -l | awk '{$1=$1};1') != "0" ]; then
+    # Run client command using piped input (more reliable than command-line args)
+    # The client with command-line args can return "Closed" even when ready
+    local client_output
+    client_output=$(echo "lna" | ${_client} 2>&1)
+    local client_exit_code=$?
+
+    # If client command failed, system is not ready
+    if [ ${client_exit_code} -ne 0 ]; then
+      return 1
+    fi
+
+    # Check if there are any bundles not active (excluding known exclusions)
+    # First grep for actual bundle rows with "Resolved" state, then exclude known fragments
+    local resolved_bundles
+    resolved_bundles=$(echo "${client_output}" | grep "│ Resolved │" | grep -Ev "${_legacy_wfr_exclusions}" | wc -l | awk '{$1=$1};1')
+    if [ "${resolved_bundles}" != "0" ]; then
       return 1
     fi
     return 0
