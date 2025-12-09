@@ -13,8 +13,8 @@ echo -e "\nLog file found, continuing..."
 waitForReady
 
 if [ -n "$INSTALL_PROFILE" ]; then
-  echo "Installing $INSTALL_PROFILE profile. This may take some time..." 
-  ${_client} profile:install ${INSTALL_PROFILE}
+  echo "Installing $INSTALL_PROFILE profile. This may take some time..."
+  echo "profile:install ${INSTALL_PROFILE}" | ${_client}
   waitForReady
 fi
 
@@ -24,7 +24,7 @@ if [ -n "$INSTALL_FEATURES" ]; then
   for index in "${!_install_features[@]}"
   do
     echo "Installing: ${_install_features[$index]}"
-    ${_client} "feature:install ${_install_features[$index]}"
+    echo "feature:install ${_install_features[$index]}" | ${_client}
   done
 fi
 
@@ -34,7 +34,7 @@ if [ -n "$UNINSTALL_FEATURES" ]; then
   for index in "${!_uninstall_features[@]}"
   do
     echo "Uninstalling: ${_uninstall_features[$index]}"
-    ${_client} "feature:uninstall ${_uninstall_features[$index]}"
+    echo "feature:uninstall ${_uninstall_features[$index]}" | ${_client}
   done
 fi
 
