@@ -86,8 +86,8 @@ _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay
 
 ###### Readiness Check Settings #######
 _experimental_checks_enabled=${EXPERIMENTAL_READINESS_CHECKS_ENABLED:=false}
-# The following bundles are excluded from the legacy 'lna' based ready check
-_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts|JLine JANSI Terminal, Hosts|Apache Aries Blueprint Core Compatiblity Fragment Bundle, Hosts|camel-caffeine-lrucache, Hosts"}
+# The following bundles are excluded from the legacy bundle-list readiness check
+_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts|JLine JANSI Terminal, Hosts|Apache Aries Blueprint Core Compatiblity Fragment Bundle, Hosts|camel-caffeine-lrucache, Hosts|OPS4J Pax Web - EL 2.2 compatibility, Hosts|OPS4J Pax Web - Servlet API 3.1 compatibility, Hosts"}
 
 ###### Functions ############
 
@@ -111,7 +111,7 @@ function isReady {
     # Run client command using piped input (more reliable than command-line args)
     # The client with command-line args can return "Closed" even when ready
     local client_output
-    client_output=$(echo "lna" | ${_client} 2>&1)
+    client_output=$(printf '%s\n' 'bundle:list -t 0 --no-ellipsis' | ${_client} 2>&1)
     local client_exit_code=$?
 
     # If client command failed, system is not ready

@@ -48,7 +48,8 @@ Both of these sets of steps can be extended easily using the following methods.
 There are a few protections in place in this image to help get timings right when performing installations. The default approach checks if all bundles are started before considering the system "ready"
 By default there are a few bundles that are excluded from this check. These defaults can be overriden via the `READINESS_EXCLUSIONS` environment variable
 
-The default exclusions are: `Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts`
+The default exclusions are maintained centrally in `entrypoint/global_env.sh`, including the Pax Web compatibility fragments. Bundle names are requested without truncation so these exclusions can match.
+The defaults are assigned at runtime, not inherited as a Docker `ENV`. A nonempty `READINESS_EXCLUSIONS` replaces the defaults rather than appending to them.
 Exclusions must be a string that is separated by `|` characters for each entry
 Downstream images that need a custom set of exclusions should override via their `Dockerfile`:
 
